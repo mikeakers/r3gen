@@ -1,0 +1,73 @@
+function main() {
+    let filename = "test.md"
+
+    let lines = readToLines(filename: filename)
+
+    mut activeLines: [String] = []
+    mut skipNextLine = false
+
+    for line in lines {
+        // println("line: {}", line)
+
+        if skipNextLine {
+            skipNextLine = false
+            continue
+        }
+
+        // Paragraph
+        if line == "" {
+            println("<p>")
+            for lineToEmit in activeLines {
+                println(lineToEmit)
+            }
+            println("</p>")
+            activeLines = []
+            continue
+        }
+
+        // H1
+        if line.starts_with("=") {
+            println("<h1>{}</h1>", activeLines[0])
+            activeLines = []
+            skipNextLine = true
+            continue
+        }
+
+        // H2
+        if line.starts_with("-") {
+            println("<h2>{}</h2>", activeLines[0])
+            activeLines = []
+            skipNextLine = true
+            continue
+        }
+
+        // H3
+        if line.starts_with("###") {
+            println("<h3>{}</h3>", line.split(' ')[1])
+            activeLines = []
+            skipNextLine = true
+            continue
+        }
+
+        activeLines.push(line)
+    }
+}
+
+function readToLines(filename: String) throws -> [String] {
+    mut file = File::open_for_reading(filename)
+    let file_contents = file.read_all()
+
+    mut lines: [String] = []
+    mut lineBuilder = StringBuilder::create()
+
+    for c in file_contents {
+        if c == '\n' as! u8 {
+            lines.push(lineBuilder.to_string())
+            lineBuilder = StringBuilder::create()
+        } else {
+            lineBuilder.append(c)
+        }
+    }
+
+    return lines
+}
