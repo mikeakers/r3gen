@@ -50,8 +50,25 @@ function main() {
             println()
             activeLines = []
             skipNextLine = true
-        } else if line.starts_with("###") {
-            println("<h3>{}</h3>", line.substring(start: 4, length: line.length() - 4))
+        } else if line.starts_with("#") {
+
+            mut count = 0
+
+            loop {
+                if line.substring(start: count as! usize, length: 1) == "#" {
+                    count++
+                    continue
+                }
+
+                break
+            }
+
+            println(
+                "<h{}>{}</h{}>"
+                count
+                line.substring(start: (count + 1) as! usize, length: line.length() - ((count + 1) as! usize))
+                count
+            )
             println()
             activeLines = []
             skipNextLine = true
