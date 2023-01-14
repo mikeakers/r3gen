@@ -1,12 +1,17 @@
 function main() {
     let filename = "test.md"
 
-    let lines = readToLines(filename: filename)
+    mut lines = readToLines(filename: filename)
+    lines.push("")
 
     mut activeLines: [String] = []
     mut skipNextLine = false
+    mut inBlockQuote = false
 
-    for line in lines {
+    mut tagStack: [String] = []
+
+    for l in lines {
+        mut line = l
         // println("line: {}", line)
 
         if skipNextLine {
@@ -14,42 +19,50 @@ function main() {
             continue
         }
 
+        // Blockquote
+        if inBlockQuote == false and l.starts_with("> ") {
+            inBlockQuote = true
+            println("<blockquote>")
+        }
+
+        if inBlockQuote and l.starts_with(">") {
+            if line.starts_with("> ") {
+                line = line.substring(start: 2, length: line.length() - 2)
+            } else if line.starts_with(">") {
+                line = line.substring(start: 1, length: line.length() - 1)
+            }
+        }
+
+        // println("line: |{}|", line)
+
         // Paragraph
         if line == "" {
             println("<p>{}</p>", join(strings: activeLines, separator: " "))
             println()
             activeLines = []
-            continue
-        }
-
-        // H1
-        if line.starts_with("=") {
+        } else if line.starts_with("=") {
             println("<h1>{}</h1>", activeLines[0])
             println()
             activeLines = []
             skipNextLine = true
-            continue
-        }
-
-        // H2
-        if line.starts_with("-") {
+        } else if line.starts_with("-") {
             println("<h2>{}</h2>", activeLines[0])
             println()
             activeLines = []
             skipNextLine = true
-            continue
-        }
-
-        // H3
-        if line.starts_with("###") {
-            println("<h3>{}</h3>", line.split(' ')[1])
+        } else if line.starts_with("###") {
+            println("<h3>{}</h3>", line.substring(start: 4, length: line.length() - 4))
             println()
             activeLines = []
             skipNextLine = true
-            continue
+        } else {
+            activeLines.push(line)
         }
 
-        activeLines.push(line)
+        if inBlockQuote and l.starts_with(">") == false {
+            inBlockQuote = false
+            println("</blockquote>", line)
+        }
     }
 }
 
