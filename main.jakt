@@ -16,9 +16,7 @@ function main() {
 
         // Paragraph
         if line == "" {
-            println("<p>")
-            println(join(strings: activeLines, separator: " "))
-            println("</p>")
+            println("<p>{}</p>", join(strings: activeLines, separator: " "))
             println()
             activeLines = []
             continue
