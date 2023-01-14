@@ -17,10 +17,9 @@ function main() {
         // Paragraph
         if line == "" {
             println("<p>")
-            for lineToEmit in activeLines {
-                println(lineToEmit)
-            }
+            println(join(strings: activeLines, separator: " "))
             println("</p>")
+            println()
             activeLines = []
             continue
         }
@@ -28,6 +27,7 @@ function main() {
         // H1
         if line.starts_with("=") {
             println("<h1>{}</h1>", activeLines[0])
+            println()
             activeLines = []
             skipNextLine = true
             continue
@@ -36,6 +36,7 @@ function main() {
         // H2
         if line.starts_with("-") {
             println("<h2>{}</h2>", activeLines[0])
+            println()
             activeLines = []
             skipNextLine = true
             continue
@@ -44,6 +45,7 @@ function main() {
         // H3
         if line.starts_with("###") {
             println("<h3>{}</h3>", line.split(' ')[1])
+            println()
             activeLines = []
             skipNextLine = true
             continue
@@ -70,4 +72,16 @@ function readToLines(filename: String) throws -> [String] {
     }
 
     return lines
+}
+
+function join(strings: [String], separator: String) throws -> String {
+    mut sb = StringBuilder::create()
+
+    for string in strings {
+        sb.append_string(string)
+        if string != strings.last()! {
+            sb.append_string(separator)
+        }
+    }
+    return sb.to_string()
 }
