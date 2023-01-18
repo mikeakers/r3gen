@@ -73,14 +73,53 @@ function main() {
             activeLines = []
             skipNextLine = true
         } else {
-            activeLines.push(line)
+            activeLines.push(linkify(line))
         }
 
         if inBlockQuote and l.starts_with(">") == false {
             inBlockQuote = false
-            println("</blockquote>", line)
+            println("</blockquote>\n", line)
         }
     }
+}
+
+function linkify(line: String) throws -> String {
+    mut outLine = line
+    mut nameStart: usize? = None
+    mut nameEnd: usize? = None
+    mut linkStart: usize? = None
+    mut linkEnd: usize? = None
+
+    for i in 0..line.length() {
+        let c = line.byte_at(i)
+
+        if c == b'[' {
+            // println("found possible link name start")
+            nameStart = i
+        }
+        if c == b']' {
+            // println("found possible link name end")
+            nameEnd = i
+        }
+        if c == b'(' {
+            // println("found possible link addr start")
+            linkStart = i
+        }
+        if c == b')' {
+            // println("found possible link addr end")
+            linkEnd = i
+        }
+    }
+
+    if nameStart.has_value() and nameEnd.has_value() and linkStart.has_value() and linkEnd.has_value() {
+        let name = line.substring(start: nameStart! + 1, length: nameEnd! - nameStart! - 1)
+        let link = line.substring(start: linkStart! + 1, length: linkEnd! - linkStart! - 1)
+        let linkHTML = String::format("<a href=\"{}\">{}</a>", link, name)
+        let substringToReplace = line.substring(start: nameStart!, length: linkEnd! - nameStart! + 1)
+        outLine = outLine.replace(replace: substringToReplace, with: linkHTML)
+    }
+
+    return outLine
 }
 
 function readToLines(filename: String) throws -> [String] {
