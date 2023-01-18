@@ -109,14 +109,18 @@ function linkify(line: String) throws -> String {
             // println("found possible link addr end")
             linkEnd = i
         }
-    }
 
-    if nameStart.has_value() and nameEnd.has_value() and linkStart.has_value() and linkEnd.has_value() {
-        let name = line.substring(start: nameStart! + 1, length: nameEnd! - nameStart! - 1)
-        let link = line.substring(start: linkStart! + 1, length: linkEnd! - linkStart! - 1)
-        let linkHTML = String::format("<a href=\"{}\">{}</a>", link, name)
-        let substringToReplace = line.substring(start: nameStart!, length: linkEnd! - nameStart! + 1)
-        outLine = outLine.replace(replace: substringToReplace, with: linkHTML)
+        if nameStart.has_value() and nameEnd.has_value() and linkStart.has_value() and linkEnd.has_value() {
+            let name = line.substring(start: nameStart! + 1, length: nameEnd! - nameStart! - 1)
+            let link = line.substring(start: linkStart! + 1, length: linkEnd! - linkStart! - 1)
+            let linkHTML = String::format("<a href=\"{}\">{}</a>", link, name)
+            let substringToReplace = line.substring(start: nameStart!, length: linkEnd! - nameStart! + 1)
+            outLine = outLine.replace(replace: substringToReplace, with: linkHTML)
+            nameStart = None
+            nameEnd = None
+            linkStart = None
+            linkEnd = None
+        }
     }
 
     return outLine

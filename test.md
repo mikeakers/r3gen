@@ -22,3 +22,5 @@ dog's back.
 > ## This is an H2 in a blockquote
 
 Lets try [a link](http://daringfireball.net/markdown).
+
+How about a paragraph with [two](https://github.com/SerenityOS/jakt) [links](https://github.com/SerenityOS/serenity)
