@@ -1,0 +1,30 @@
+function join(strings: [String], separator: String) throws -> String {
+    mut sb = StringBuilder::create()
+
+    for string in strings {
+        sb.append_string(string)
+        if string != strings.last()! {
+            sb.append_string(separator)
+        }
+    }
+    return sb.to_string()
+}
+
+function readToLines(filename: String) throws -> [String] {
+    mut file = File::open_for_reading(filename)
+    let file_contents = file.read_all()
+
+    mut lines: [String] = []
+    mut lineBuilder = StringBuilder::create()
+
+    for c in file_contents {
+        if c == '\n' as! u8 {
+            lines.push(lineBuilder.to_string())
+            lineBuilder = StringBuilder::create()
+        } else {
+            lineBuilder.append(c)
+        }
+    }
+
+    return lines
+}
